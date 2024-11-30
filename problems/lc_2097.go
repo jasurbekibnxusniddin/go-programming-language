@@ -19,6 +19,7 @@ end2 = 5 == 5 = start3
 
 https://leetcode.com/problems/valid-arrangement-of-pairs/
 */
+package main
 
 import "fmt"
 
