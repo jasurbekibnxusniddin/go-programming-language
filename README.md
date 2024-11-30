@@ -1,10 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Go Roadmap</title>
-  <style>
+
+<style>
     body {
       font-family: Arial, sans-serif;
       line-height: 1.6;
@@ -17,12 +12,7 @@
     h1, h2, h3 {
       color: #007acc;
     }
-    ul {
-      padding-left: 20px;
-    }
-    li {
-      margin-bottom: 8px;
-    }
+   
     pre {
       background: #272822;
       color: #f8f8f2;
@@ -35,11 +25,11 @@
       text-decoration: none;
     }
     a:hover {
-      text-decoration: underline;
+      text-decoration: underline; 
     }
-  </style>
-</head>
-<body>
+</style>
+
+<div style="background-color: white; padding: 10px;">
 
 # Go Roadmap
 
@@ -133,7 +123,4 @@
 - Open-source projects to contribute to
 - Community forums and meetups
 
----
-
-</body>
-</html>
+</div>
