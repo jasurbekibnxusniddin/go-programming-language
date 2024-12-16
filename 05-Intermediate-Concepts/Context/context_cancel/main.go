@@ -8,6 +8,7 @@ import (
 func main() {
 	ss := slowServer()
 	defer ss.Close()
+
 	fs := fastServer()
 	defer fs.Close()
 
