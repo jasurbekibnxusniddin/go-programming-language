@@ -1,3 +1,0 @@
-[submodule "05-Intermediate-Concepts/Context/context_cancel"]
-	path = 05-Intermediate-Concepts/Context/context_cancel
-	url = https://github.com/learning-go-book/context_cancel.git
