@@ -134,6 +134,179 @@ implementation.
 To create a cancellable context, use the context.WithCancel function. It takes in a context.Context as a parameter and returns a context.Context and a context.CancelFunc. The returned context.Context is not the same context thatwas passed into the function. Instead, it is a child context that wraps the passed-in
 parent context.Context. A context.CancelFunc is a function that cancels the context, telling all of the code that’s listening for potential cancellation that it’s time to stop processing.
 
-> We’ll see this wrapping pattern several times. A context is treated as an immutable instance. Whenever we add information to a context, we do so by wrapping an existing parent context with a child context. >
+> We’ll see this wrapping pattern several times. A context is treated as an immutable instance. Whenever we add information to a context, we do so by wrapping an existing parent context with a child context. 
 >
 > This allows us to use contexts to pass information into deeper layers of the code. The context is never used to pass information out of deeper layers to higher layers.
+
+Let’s take a look at how it works. First we’ll set up two servers in a file
+called servers.go:
+
+```go
+func slowServer() *httptest.Server {
+    s := httptest.NewServer(
+        http.HandlerFunc(
+            func(w http.ResponseWriter, r *http.Request) {
+                time.Sleep(2 * time.Second)
+                w.Write([]byte("Slow response"))
+            },
+        ),
+    )
+    
+    return s
+}
+
+func fastServer() *httptest.Server {
+    s := httptest.NewServer(
+        http.HandlerFunc(
+            func(w http.ResponseWriter, r *http.Request) {
+                if r.URL.Query().Get("error") == "true" {
+                    w.Write([]byte("error"))
+                    return
+                }
+                w.Write([]byte("ok"))
+            },
+        ),
+    )
+    return s
+}
+```
+
+We are using the httptest.Server, which makes it easier to write unit tests for code that talks to remote servers. It’s useful here since both the client and the server are within the same program.
+
+Next, we’re going to write the client portion of the code in a file called client.go:
+
+```go
+var client = http.Client{}
+func callBoth(ctx context.Context, errVal string, slowURL string, fastURL string) {
+    
+    ctx, cancel := context.WithCancel(ctx)
+    defer cancel()
+    
+    var wg sync.WaitGroup
+    wg.Add(2)
+    
+    go func() {
+    defer wg.Done()
+        err := callServer(ctx, "slow", slowURL)
+        if err != nil {
+            cancel()
+        }
+    }()
+
+    go func() {
+        defer wg.Done()
+        err := callServer(ctx, "fast", fastURL+"?error="+errVal)
+        if err != nil {
+        cancel()
+        }
+    }()
+    
+    wg.Wait()
+    
+    fmt.Println("done with both")
+}
+
+func callServer(ctx context.Context, label string, url string) error {
+    req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
+    
+    if err != nil {
+        fmt.Println(label, "request err:", err)
+        return err
+    }
+
+    resp, err := client.Do(req)
+    if err != nil {
+        fmt.Println(label, "response err:", err)
+        return err
+    }
+
+    data, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        fmt.Println(label, "read err:", err)
+        return err
+    }
+
+    result := string(data)
+    if result != "" {
+        fmt.Println(label, "result:", result)
+    }
+
+    if result == "error" {
+        fmt.Println("cancelling from", label)
+        return errors.New("error happened")
+    }
+
+    return nil
+}
+```
+
+All of the interesting stuff is in this file. First, our callBoth function creates a cancellable context and a cancellation function from the passed-in context. By convention, this function variable is named cancel. It is important to remember that any time you create a cancellable context, you must call the cancel function. It is fine to call it more than once; every invocation after the first is ignored. We use a defer to make sure that it is eventually called. Next, we set up two goroutines and pass the cancella‐ ble context, a label, and the URL to callServer, and wait for them both to complete. If either call to callServer returns an error, we call the cancel function. The callServer function is a simple client. We create our requests with the cancellable context and make a call. If an error happens, or if we get the string error returned, we return the error.
+
+Finally, we have the main function, which kicks off the program, in the file main.go:
+
+```go
+func main() {
+    ss := slowServer()
+    defer ss.Close()
+    
+    fs := fastServer()
+    defer fs.Close()
+    
+    ctx := context.Background()
+    callBoth(ctx, os.Args[1], ss.URL, fs.URL)
+}
+```
+
+In main, we start the servers, create a context, and then call the clients with the context, the first argument to our program, and the URLs for our servers.
+
+Before write this Mekefile:
+```Makefile
+.DEFAULT_GOAL := build
+
+.PHONY: build run-ok run-cancel
+
+build:
+	go build
+
+run-ok: build
+	./context_cancel false
+	rm context_cancel
+
+run-cancel: build
+	./context_cancel true
+	rm context_cancel
+```
+
+Here’s what happens if you run without an error:
+```sh
+$ make run-ok
+go build
+./context_cancel false
+fast result: ok
+slow result: Slow response
+done with both
+```
+
+And here’s what happens if an error is triggered:
+```sh
+$ make run-cancel
+go build
+./context_cancel true
+fast result: error
+cancelling from fast
+slow response err: Get "http://127.0.0.1:38804": context canceled
+done with both
+```
+
+> Any time you create a context that has an associated cancel func‐
+tion, you must call that cancel function when you are done process‐
+ing, whether or not your processing ends in an error. If you do not,
+your program will leak resources (memory and goroutines) and
+eventually slow down or crash. There is no error if you call the can‐
+cel function more than once; any invocation after the first does
+nothing. The easiest way to make sure you call the cancel function
+is to use defer to invoke it right after the cancel function is
+returned.
+
+While manual cancellation is useful, it’s not your only option. In the next section,
+we’ll see how to automate cancellation with timeouts.
