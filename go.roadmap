@@ -1,61 +1,111 @@
 Go
-├── History of Go programming language
+├── 01 - History of Go programming language
 |      ├── Development timeline
 |      ├── Creators and motivation
 |      ├── Open-source announcement
 |      ├── Goals of the language
 |      └── Key milestones and versions
 |
-├── Features of Go
+├── 02 - Features of Go
 |      ├── Simplicity and readability
 |      ├── Concurrency (goroutines, channels)
 |      ├── Static typing and garbage collection
 |      ├── Fast compilation
 |      └── Cross-platform support
 |
-├── Installing Go
+├── 03 - Installing Go
 |      ├── Setting up on Windows
 |      ├── Setting up on MacOS
 |      ├── Setting up on Linux
 |      └── Writing your first "Hello, World!"
 |
-├── Go Syntax and Basics
+├── 04 - Go Syntax and Basics
 |      ├── Variables and data types
 |      ├── Constants
 |      ├── Control flow (if, switch, loops)
 |      ├── Functions
 |      └── Error handling
 |
-├── Intermediate Concepts
+├── 05 - Intermediate Concepts
 |      ├── Structs and interfaces
 |      ├── Pointers
 |      ├── Packages and modules
 |      ├── Goroutines and concurrency
-|      └── File I/O
+|      ├── File I/O
+|      ├── Introduction to `context` package
+|      |      ├── What is `context`?
+|      |      ├── Why use `context`? (timeouts, cancellation, deadlines)
+|      |      ├── Creating and passing contexts
+|      |      ├── Context values and best practices
+|      |      └── Integrating `context` with goroutines
+|      └── Generics
+|             ├── Introduction to generics
+|             ├── Writing generic functions
+|             ├── Constraints (e.g., `comparable`, custom constraints)
+|             ├── Generic types and slices
+|             ├── Use cases and best practices
+|             ├── Building reusable libraries with generics
+|             ├── Type inference and performance considerations
+|             ├── Combining generics with interfaces
+|             └── Practical examples of generics in projects
 |
-├── Advanced Topics
+├── 06 - Advanced Topics
 |      ├── Testing in Go
 |      ├── Reflection
 |      ├── Custom error handling
 |      ├── Profiling and benchmarking
-|      └── Advanced concurrency patterns
+|      ├── Advanced concurrency patterns
+|      └── Advanced use of `context`
+|             ├── Context hierarchies
+|             ├── Debugging with `context`
+|             ├── Optimizing long-running tasks with `context`
+|             └── Common pitfalls with `context`
+|      
 |
-├── Building Projects
+├── 07 - Building Projects
 |      ├── CLI applications
 |      ├── Web applications (using net/http)
 |      ├── REST APIs
 |      ├── Microservices
 |      └── Integrating with databases
 |
-├── Best Practices
+├── 08 - Debugging in Go
+|      ├── Using `delve` debugger
+|      ├── Debugging with VS Code
+|      ├── Common debugging techniques
+|      └── Troubleshooting runtime errors
+|
+├── 09 - APIs and Networking
+|      ├── Making HTTP requests
+|      ├── Working with JSON data
+|      ├── Building REST APIs
+|      ├── Introduction to gRPC
+|      └── Networking basics (TCP, UDP)
+|
+├── 10 - Distributed Systems and Cloud
+|      ├── Introduction to RPC and gRPC
+|      ├── Working with Docker
+|      ├── Deploying Go apps to cloud platforms
+|      └── Using Kubernetes for orchestration
+|
+├── 11 - Security in Go
+|      ├── Writing secure code
+|      ├── Using encryption libraries (crypto)
+|      ├── Securing web applications
+|      └── Best practices for API security
+|
+├── 12 - Best Practices
 |      ├── Writing idiomatic Go
 |      ├── Project structure
 |      ├── Using linters and formatters
 |      └── Managing dependencies
 |
-└── Resources
-       ├── Official documentation
-       ├── Tutorials and courses
-       ├── Books on Go
-       ├── Open-source projects to contribute to
-       └── Community forums and meetups
+├── 13 - Resources
+|      ├── Official documentation
+|      ├── Tutorials and courses
+|      ├── Books on Go
+|      ├── Open-source projects to contribute to
+|      └── Community forums and meetups
+|
+└── 14 - news
+
